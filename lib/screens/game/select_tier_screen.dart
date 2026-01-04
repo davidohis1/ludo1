@@ -771,7 +771,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                       prizePool: AppConstants.tierPrizePools['bronze']!,
                       players: AppConstants.maxPlayers,
                       color: const Color(0xFFCD7F32),
-                      userCoins: user.coins,
+                      userCoins: user.totalCoins,
                       userLives: user.lives,
                       isSelected: selectedTier == 'bronze',
                       onTap: () => setState(() => _selectedTier = 'bronze'),
@@ -785,7 +785,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                       prizePool: AppConstants.tierPrizePools['silver']!,
                       players: AppConstants.maxPlayers,
                       color: AppColors.grey,
-                      userCoins: user.coins,
+                      userCoins: user.totalCoins,
                       userLives: user.lives,
                       isSelected: selectedTier == 'silver',
                       onTap: () => setState(() => _selectedTier = 'silver'),
@@ -799,7 +799,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                       prizePool: AppConstants.tierPrizePools['gold']!,
                       players: AppConstants.maxPlayers,
                       color: const Color(0xFFFFD700),
-                      userCoins: user.coins,
+                      userCoins: user.totalCoins,
                       userLives: user.lives,
                       isSelected: selectedTier == 'gold',
                       onTap: () => setState(() => _selectedTier = 'gold'),
@@ -809,7 +809,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed:
-                            user.coins >= AppConstants.tierEntryFees[selectedTier]! // REMOVED: user.lives > 0 &&
+                            user.totalCoins >= AppConstants.tierEntryFees[selectedTier]! // REMOVED: user.lives > 0 &&
                                 ? () => _showMatchmakingOptionsModal(
                                     context,
                                     selectedTier,
@@ -818,7 +818,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                                 : null,
                         icon: const Icon(Icons.play_arrow),
                         label: Text(
-                          user.coins >= AppConstants.tierEntryFees[selectedTier]! // CHANGED: Removed life check
+                          user.totalCoins >= AppConstants.tierEntryFees[selectedTier]! // CHANGED: Removed life check
                               ? 'Play Game'
                               : 'Insufficient Coins', // CHANGED: Removed "No Lives Available"
                           style: const TextStyle(
@@ -911,7 +911,7 @@ class _SelectTierScreenState extends State<SelectTierScreen> {
                   ),
                   const SizedBox(width: 3),
                   Text(
-                    '${user.coins} Coins',
+                    '${user.totalCoins} Coins',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
