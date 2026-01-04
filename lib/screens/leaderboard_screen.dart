@@ -61,45 +61,28 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   
   setState(() {
     _isLoadingWeeklyGames = true;
-    _weeklyGameLeaderboard = [];
   });
 
-  try {
-    print('🎮 Loading users by winning coins balance...');
-    
-    final weeklyData = <Map<String, dynamic>>[];
-    
-    for (var user in allUsers) {
-      // Add ALL users to leaderboard, even with 0 winning coins
-      weeklyData.add({
-        'user': user,
-        'weeklyWinnings': user.winningCoins,
-        'winningCoins': user.winningCoins,
-      });
-    }
-    
-    // Sort by winning coins (highest first), 0 values will be at the bottom
-    weeklyData.sort((a, b) => (b['winningCoins'] as int).compareTo(a['winningCoins'] as int));
-    
-    print('✅ Weekly leaderboard calculated: ${weeklyData.length} users');
-    
-    if (mounted) {
-      setState(() {
-        _weeklyGameLeaderboard = weeklyData;
-        _isLoadingWeeklyGames = false;
-      });
-    }
-    
-  } catch (e) {
-    print('❌ Error calculating weekly leaderboard: $e');
-    if (mounted) {
-      setState(() {
-        _isLoadingWeeklyGames = false;
-      });
-    }
+  // Just use winningCoins as the weekly score
+  final weeklyData = <Map<String, dynamic>>[];
+  
+  for (var user in allUsers) {
+    weeklyData.add({
+      'user': user,
+      'weeklyWinnings': user.winningCoins, // Use winningCoins instead of transactions
+    });
+  }
+  
+  // Sort by winning coins (highest first)
+  weeklyData.sort((a, b) => (b['weeklyWinnings'] as int).compareTo(a['weeklyWinnings'] as int));
+  
+  if (mounted) {
+    setState(() {
+      _weeklyGameLeaderboard = weeklyData;
+      _isLoadingWeeklyGames = false;
+    });
   }
 }
-
   // Simple: Get Monday 00:00
   DateTime _getStartOfWeek(DateTime date) {
     int daysSinceMonday = date.weekday - DateTime.monday;
@@ -495,10 +478,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     ),
                     child: FutureBuilder<int>(
                       future: _isWeekly 
-                          ? _getCurrentUserWeeklyGameWinnings(currentUser.id)
-                          : Future.value(currentUser.winningCoins),  // Changed from coins
+                          ? Future.value(currentUser.winningCoins)  // Changed this line
+                          : Future.value(currentUser.winningCoins),
                       builder: (context, snapshot) {
-                        final currentScore = snapshot.data ?? (_isWeekly ? 0 : currentUser.winningCoins);
+                        final currentScore = snapshot.data ?? currentUser.winningCoins; 
                         
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
