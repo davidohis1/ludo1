@@ -191,7 +191,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            user.coins.toStringAsFixed(0),
+                            user.totalCoins.toStringAsFixed(0),
                             style: const TextStyle(
                               color: AppColors.white,
                               fontSize: 40,
@@ -289,36 +289,44 @@ class _WalletScreenState extends State<WalletScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: _isProcessing ? null : () {
-                          _showAddCoinsDialog(context, userId!, user.email);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryRed,
-                          foregroundColor: AppColors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: _isProcessing
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text(
-                                'Add Coins',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                    ),
+  child: ElevatedButton(
+    onPressed: _isProcessing ? null : () {
+      // Get email directly from Firebase Auth (always available for logged in users)
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final userEmail = currentUser?.email;
+      
+      if (userEmail != null && userEmail.isNotEmpty) {
+        _showAddCoinsDialog(context, userId!, userEmail);
+      } else {
+        ToastUtils.showError(context, 'Unable to get your email. Please check your account.');
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.primaryRed,
+      foregroundColor: AppColors.white,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    child: _isProcessing
+        ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+          )
+        : const Text(
+            'Add Coins',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+  ),
+),
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
@@ -1195,7 +1203,8 @@ if (result['success'] == true && result['status'] == 'success') {
     .collection('users')
     .doc(userId)
     .update({
-      'coins': FieldValue.increment(coins), // ← OLD WAY
+      'totalCoins': FieldValue.increment(coins),
+      'depositCoins': FieldValue.increment(coins),
     });
   
   // 2. Refresh user data in UserCubit
