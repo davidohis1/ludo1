@@ -6,7 +6,7 @@
     
     <!-- Android 11+ specific: Allow cleartext traffic for Paystack -->
     <application
-        android:label="ludo_Titans"
+        android:label="ludoTitan"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
